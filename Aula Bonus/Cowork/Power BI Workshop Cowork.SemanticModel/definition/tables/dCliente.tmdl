@@ -1,0 +1,106 @@
+table dCliente
+	lineageTag: 132ed3dd-8fec-4049-aa9c-5fe45be90898
+
+	column IdCliente
+		dataType: string
+		lineageTag: a6b7f3d1-739a-4ed7-86b0-88b87f4f9e50
+		summarizeBy: none
+		sourceColumn: IdCliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column NomeCliente
+		dataType: string
+		lineageTag: cefcfdc6-6e5b-4fb8-ab94-109efb50ec3b
+		summarizeBy: none
+		sourceColumn: NomeCliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tipo
+		dataType: string
+		lineageTag: 88f19f3d-c010-4583-8fa2-4627bf65db20
+		summarizeBy: none
+		sourceColumn: Tipo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segmento
+		dataType: string
+		lineageTag: e16f2cd0-5327-4bf5-993a-e05107cd6f05
+		summarizeBy: none
+		sourceColumn: Segmento
+
+		annotation SummarizationSetBy = Automatic
+
+	column IdLocal
+		dataType: string
+		isHidden
+		lineageTag: 3e100240-2122-4c76-9ee6-a586358bf41b
+		summarizeBy: none
+		sourceColumn: IdLocal
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cidade
+		dataType: string
+		lineageTag: 3e100240-2122-4c76-9ee6-a586358bf4a1
+		summarizeBy: none
+		sourceColumn: Cidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column Estado
+		dataType: string
+		lineageTag: 3e100240-2122-4c76-9ee6-a586358bf4a2
+		summarizeBy: none
+		sourceColumn: Estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column Regiao
+		dataType: string
+		lineageTag: 3e100240-2122-4c76-9ee6-a586358bf4a3
+		summarizeBy: none
+		sourceColumn: Regiao
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dCliente = m
+		mode: import
+		queryGroup: Dimensões
+		source =
+				let
+				    origem              = Fonte_VendasExemplo,
+				    navegarClientes     = origem{[Item = "Clientes", Kind = "Sheet"]}[Data],
+				    promoverCabec       = Table.PromoteHeaders(navegarClientes, [PromoteAllScalars = true]),
+				    tiparClientes       = Table.TransformColumnTypes(promoverCabec, {
+				                             {"ID_Cliente", type text},
+				                             {"Nome_Cliente", type text},
+				                             {"Tipo", type text},
+				                             {"Segmento", type text},
+				                             {"ID_Local", type text}
+				                          }),
+				    navegarLocaliz      = origem{[Item = "Localização", Kind = "Sheet"]}[Data],
+				    promoverCabecLoc    = Table.PromoteHeaders(navegarLocaliz, [PromoteAllScalars = true]),
+				    tiparLocaliz        = Table.TransformColumnTypes(promoverCabecLoc, {
+				                             {"ID_Local", type text},
+				                             {"Cidade",   type text},
+				                             {"Estado",   type text},
+				                             {"Região",   type text}
+				                          }),
+				    mesclarLocaliz      = Table.NestedJoin(tiparClientes, {"ID_Local"}, tiparLocaliz, {"ID_Local"}, "__loc", JoinKind.LeftOuter),
+				    expandirLocaliz     = Table.ExpandTableColumn(mesclarLocaliz, "__loc", {"Cidade", "Estado", "Região"}, {"Cidade", "Estado", "Região"}),
+				    renomearColunas     = Table.RenameColumns(expandirLocaliz, {
+				                             {"ID_Cliente", "IdCliente"},
+				                             {"Nome_Cliente", "NomeCliente"},
+				                             {"ID_Local", "IdLocal"},
+				                             {"Região", "Regiao"}
+				                          })
+				in
+				    renomearColunas
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,12 @@
+relationship AutoDetected_4cb7e3e4-0e31-4433-b204-5edb2d35600d
+	fromColumn: Vendas.ID_Cliente
+	toColumn: Clientes.ID_Cliente
+
+relationship AutoDetected_b8677342-71bd-4b11-93fb-2978ade680dd
+	fromColumn: Vendas.ID_Produto
+	toColumn: Produtos.ID_Produto
+
+relationship Vendas_Data_Calendário_Data
+	fromColumn: Vendas.Data
+	toColumn: Calendário.Data
+

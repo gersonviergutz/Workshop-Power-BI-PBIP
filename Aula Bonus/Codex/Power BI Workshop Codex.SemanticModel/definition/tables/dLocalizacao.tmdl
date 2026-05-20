@@ -1,0 +1,51 @@
+table dLocalizacao
+	lineageTag: 7d433dbd-8fb8-41d2-802a-07db78892323
+
+	column LocalId
+		dataType: string
+		lineageTag: d6acd929-78ba-427e-8394-312a3deebffa
+		summarizeBy: none
+		sourceColumn: LocalId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cidade
+		dataType: string
+		lineageTag: f912a314-2dfa-4bb6-8ae8-65f8f85f52a8
+		summarizeBy: none
+		sourceColumn: Cidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column Estado
+		dataType: string
+		lineageTag: 30a9a7c8-9f4c-4451-b0e1-2f5e520ddfb3
+		summarizeBy: none
+		sourceColumn: Estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column Regiao
+		dataType: string
+		lineageTag: efc3072c-9715-4998-8e13-6a75ed01a840
+		summarizeBy: none
+		sourceColumn: Regiao
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dLocalizacao = m
+		mode: import
+		source =
+				let
+				  origem = srcVendasExemplo,
+				  navegacao = origem{[Item = "Localização", Kind = "Sheet"]}[Data],
+				    cabecalhosPromovidos = Table.PromoteHeaders(navegacao, [PromoteAllScalars=true]),
+				    tiposAjustados = Table.TransformColumnTypes(cabecalhosPromovidos,{{"ID_Local", type text}, {"Cidade", type text}, {"Estado", type text}, {"Região", type text}}),
+				    colunasRenomeadas = Table.RenameColumns(tiposAjustados, {{"ID_Local", "LocalId"}, {"Região", "Regiao"}})
+				in
+				  colunasRenomeadas
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

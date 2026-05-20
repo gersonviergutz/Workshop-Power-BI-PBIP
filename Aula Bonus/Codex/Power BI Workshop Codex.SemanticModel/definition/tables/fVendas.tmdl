@@ -1,0 +1,487 @@
+table fVendas
+	lineageTag: 28a09ca9-1aa6-43b3-958a-462895e69080
+
+	measure 'Receita Total' = SUM(fVendas[ValorTotal])
+		formatString: #,0.00
+		displayFolder: 01. Base
+		lineageTag: 715e9d5f-7517-40bd-9814-08b07c4e1515
+
+	measure 'Receita Pedidos Aprovados' =
+			VAR _Receita =
+			    CALCULATE(
+			        [Receita Total],
+			        FILTER(
+			            fVendas,
+			            NOT CONTAINSSTRING( UPPER( fVendas[Status] ), "CANCEL" )
+			        )
+			    )
+			RETURN
+			    _Receita
+		formatString: #,0.00
+		displayFolder: 01. Base
+		lineageTag: 0f2dd7bc-5dbb-4d39-a718-1006baee1a26
+
+	measure 'Receita Cancelada' =
+			VAR _Receita =
+			    CALCULATE(
+			        [Receita Total],
+			        FILTER(
+			            fVendas,
+			            CONTAINSSTRING( UPPER( fVendas[Status] ), "CANCEL" )
+			        )
+			    )
+			RETURN
+			    _Receita
+		formatString: #,0.00
+		displayFolder: 02. Financeiro
+		lineageTag: 736a69b6-a6aa-44d9-a461-4aae460a29eb
+
+	measure 'Receita Devolvida' =
+			VAR _Receita =
+			    CALCULATE(
+			        [Receita Total],
+			        FILTER(
+			            fVendas,
+			            CONTAINSSTRING( UPPER( fVendas[Status] ), "DEVOL" )
+			        )
+			    )
+			RETURN
+			    _Receita
+		formatString: #,0.00
+		displayFolder: 02. Financeiro
+		lineageTag: dd050c16-0021-4a68-b22a-11656c3b805b
+
+	measure 'Receita Faturada Bruta' =
+			VAR _Receita =
+			    CALCULATE(
+			        [Receita Total],
+			        FILTER(
+			            fVendas,
+			            NOT CONTAINSSTRING( UPPER( fVendas[Status] ), "CANCEL" )
+			                && NOT CONTAINSSTRING( UPPER( fVendas[Status] ), "DEVOL" )
+			        )
+			    )
+			RETURN
+			    _Receita
+		formatString: #,0.00
+		displayFolder: 02. Financeiro
+		lineageTag: 414cf19a-0a5d-463d-be62-f039d05eb521
+
+	measure 'Receita Faturada Líquida' =
+			VAR _ReceitaBruta = [Receita Faturada Bruta]
+			VAR _Devolucoes = [Receita Devolvida]
+			RETURN
+			    _ReceitaBruta - _Devolucoes
+		formatString: #,0.00
+		displayFolder: 02. Financeiro
+		lineageTag: e92894e8-930f-4c39-afb5-2c162e9b2a12
+
+	measure 'Quantidade Vendida' = SUM(fVendas[Quantidade])
+		formatString: #,0
+		displayFolder: 01. Base
+		lineageTag: 1d52c9f0-67c5-48a3-ba1c-8f8d3fac4e20
+
+	measure '# Pedidos' = DISTINCTCOUNT(fVendas[VendaId])
+		formatString: #,0
+		displayFolder: 01. Base
+		lineageTag: f4b384de-2afc-48a4-9471-45e2a8833e6a
+
+	measure '# Pedidos Cancelados' =
+			VAR _Pedidos =
+			    CALCULATE(
+			        [# Pedidos],
+			        FILTER(
+			            fVendas,
+			            CONTAINSSTRING( UPPER( fVendas[Status] ), "CANCEL" )
+			        )
+			    )
+			RETURN
+			    _Pedidos
+		formatString: #,0
+		displayFolder: 02. Financeiro
+		lineageTag: d3d91777-d3ea-4d73-a0c8-5ceebf4ec72a
+
+	measure '# Clientes Ativos' = DISTINCTCOUNT(fVendas[ClienteId])
+		formatString: #,0
+		displayFolder: 03. Clientes
+		lineageTag: 6c0bd8e9-0441-4583-a332-848dfa332881
+
+	measure 'Ticket Médio' =
+			VAR _Receita = [Receita Faturada Líquida]
+			VAR _Pedidos = [# Pedidos]
+			RETURN
+			    DIVIDE( _Receita, _Pedidos )
+		formatString: #,0.00
+		displayFolder: 01. Base
+		lineageTag: 5207255a-2bd0-49e3-a4d5-d22203ff937e
+
+	measure CPV =
+			VAR _Custo =
+			    SUMX(
+			        fVendas,
+			        fVendas[Quantidade] * RELATED( dProduto[CustoUnitario] )
+			    )
+			RETURN
+			    _Custo
+		formatString: #,0.00
+		displayFolder: 02. Financeiro
+		lineageTag: 7128ef27-e127-4e4e-b6b4-dbee3bb64579
+
+	measure 'Lucro Bruto' =
+			VAR _Receita = [Receita Faturada Líquida]
+			VAR _Custo = [CPV]
+			RETURN
+			    _Receita - _Custo
+		formatString: #,0.00
+		displayFolder: 02. Financeiro
+		lineageTag: d5836430-5547-4d55-b8d5-f8258908149b
+
+	measure '% Margem Bruta' =
+			VAR _Lucro = [Lucro Bruto]
+			VAR _Receita = [Receita Faturada Líquida]
+			RETURN
+			    DIVIDE( _Lucro, _Receita )
+		formatString: 0.00%
+		displayFolder: 02. Financeiro
+		lineageTag: 1fc5df9c-3ce1-4a97-94cc-3c595a69450e
+
+	measure '% Receita Cancelada' =
+			VAR _Cancelada = [Receita Cancelada]
+			VAR _Total = [Receita Total]
+			RETURN
+			    DIVIDE( _Cancelada, _Total )
+		formatString: 0.00%
+		displayFolder: 02. Financeiro
+		lineageTag: 83a29460-3408-45dc-8d0d-8279a0b83e9f
+
+	measure 'Receita MTD' =
+			VAR _Receita =
+			    CALCULATE(
+			        [Receita Faturada Líquida],
+			        DATESMTD( dCalendario[Data] )
+			    )
+			RETURN
+			    _Receita
+		formatString: #,0.00
+		displayFolder: 04. Inteligência Temporal
+		lineageTag: c8de7b3d-8d6e-43f7-93ed-7b3f17bcd900
+
+	measure 'Receita YTD' =
+			VAR _Receita =
+			    CALCULATE(
+			        [Receita Faturada Líquida],
+			        DATESYTD( dCalendario[Data] )
+			    )
+			RETURN
+			    _Receita
+		formatString: #,0.00
+		displayFolder: 04. Inteligência Temporal
+		lineageTag: fb7039fb-206c-4cd4-b2ea-3fd6e39684fc
+
+	measure 'Receita Ano Anterior' =
+			VAR _Receita =
+			    CALCULATE(
+			        [Receita Faturada Líquida],
+			        SAMEPERIODLASTYEAR( dCalendario[Data] )
+			    )
+			RETURN
+			    _Receita
+		formatString: #,0.00
+		displayFolder: 04. Inteligência Temporal
+		lineageTag: 6b5762df-2e12-4c5f-b663-dc2b8736bff5
+
+	measure 'Var YoY Receita' =
+			VAR _Atual = [Receita Faturada Líquida]
+			VAR _Anterior = [Receita Ano Anterior]
+			RETURN
+			    _Atual - _Anterior
+		formatString: #,0.00
+		displayFolder: 04. Inteligência Temporal
+		lineageTag: 58a29e59-d298-4cce-8619-63abd2a69e67
+
+	measure '% Var YoY Receita' =
+			VAR _Variacao = [Var YoY Receita]
+			VAR _Anterior = [Receita Ano Anterior]
+			RETURN
+			    DIVIDE( _Variacao, _Anterior )
+		formatString: 0.00%
+		displayFolder: 04. Inteligência Temporal
+		lineageTag: 13e46f3d-8ca6-4924-abf3-04324df3ad9d
+
+	measure 'Rank Produto Receita' =
+			VAR _Ranking =
+			    RANKX(
+			        ALLSELECTED( dProduto[NomeProduto] ),
+			        [Receita Faturada Líquida],
+			        ,
+			        DESC,
+			        Dense
+			    )
+			RETURN
+			    _Ranking
+		formatString: #,0
+		displayFolder: 05. Ranking e Concentração
+		lineageTag: fc8e9444-d2e8-40d4-911b-fd714768e7e4
+
+	measure 'Rank Cliente Receita' =
+			VAR _Ranking =
+			    RANKX(
+			        ALLSELECTED( dCliente[NomeCliente] ),
+			        [Receita Faturada Líquida],
+			        ,
+			        DESC,
+			        Dense
+			    )
+			RETURN
+			    _Ranking
+		formatString: #,0
+		displayFolder: 05. Ranking e Concentração
+		lineageTag: 1a056f66-c130-401d-93ae-ae61b1d0152e
+
+	measure 'Rank Cidade Receita' =
+			VAR _Ranking =
+			    RANKX(
+			        ALLSELECTED( dLocalizacao[Cidade] ),
+			        [Receita Faturada Líquida],
+			        ,
+			        DESC,
+			        Dense
+			    )
+			RETURN
+			    _Ranking
+		formatString: #,0
+		displayFolder: 05. Ranking e Concentração
+		lineageTag: 9de12c61-3bc9-4c8d-8a9f-2a08287ac73d
+
+	measure '% Participação Receita' =
+			VAR _Receita = [Receita Faturada Líquida]
+			VAR _TotalContexto =
+			    CALCULATE(
+			        [Receita Faturada Líquida],
+			        REMOVEFILTERS( dCliente ),
+			        REMOVEFILTERS( dProduto ),
+			        REMOVEFILTERS( dLocalizacao )
+			    )
+			RETURN
+			    DIVIDE( _Receita, _TotalContexto )
+		formatString: 0.00%
+		displayFolder: 05. Ranking e Concentração
+		lineageTag: 261cd085-3094-4516-b2c5-d2d3eb5ceceb
+
+	measure '# Clientes Novos' =
+			VAR _InicioPeriodo = MIN( dCalendario[Data] )
+			VAR _FimPeriodo = MAX( dCalendario[Data] )
+			VAR _ClientesPeriodo = VALUES( fVendas[ClienteId] )
+			VAR _ClientesNovos =
+			    FILTER(
+			        _ClientesPeriodo,
+			        VAR _PrimeiraCompra =
+			            CALCULATE(
+			                MIN( fVendas[Data] ),
+			                REMOVEFILTERS( dCalendario )
+			            )
+			        RETURN
+			            _PrimeiraCompra >= _InicioPeriodo
+			                && _PrimeiraCompra <= _FimPeriodo
+			    )
+			RETURN
+			    COUNTROWS( _ClientesNovos )
+		formatString: #,0
+		displayFolder: 03. Clientes
+		lineageTag: 66046a47-2517-43c0-bf43-ff1fdccfd41f
+
+	measure '# Clientes Reativados' =
+			VAR _InicioPeriodo = MIN( dCalendario[Data] )
+			VAR _ClientesPeriodo = VALUES( fVendas[ClienteId] )
+			VAR _ClientesReativados =
+			    FILTER(
+			        _ClientesPeriodo,
+			        VAR _ComprasAntesPeriodo =
+			            CALCULATE(
+			                [# Pedidos],
+			                REMOVEFILTERS( dCalendario ),
+			                fVendas[Data] < _InicioPeriodo
+			            )
+			        VAR _ComprasUltimos180Dias =
+			            CALCULATE(
+			                [# Pedidos],
+			                REMOVEFILTERS( dCalendario ),
+			                fVendas[Data] >= _InicioPeriodo - 180,
+			                fVendas[Data] < _InicioPeriodo
+			            )
+			        RETURN
+			            _ComprasAntesPeriodo > 0
+			                && _ComprasUltimos180Dias = 0
+			    )
+			RETURN
+			    COUNTROWS( _ClientesReativados )
+		formatString: #,0
+		displayFolder: 03. Clientes
+		lineageTag: a967fb8e-7421-44bf-b4c6-931197267db5
+
+	measure '# Clientes Sem Compra 60D' =
+			VAR _DataReferencia = MAX( dCalendario[Data] )
+			VAR _ClientesInativos =
+			    FILTER(
+			        VALUES( dCliente[ClienteId] ),
+			        VAR _UltimaCompra =
+			            CALCULATE(
+			                MAX( fVendas[Data] ),
+			                REMOVEFILTERS( dCalendario )
+			            )
+			        RETURN
+			            NOT ISBLANK( _UltimaCompra )
+			                && _UltimaCompra < _DataReferencia - 60
+			    )
+			RETURN
+			    COUNTROWS( _ClientesInativos )
+		formatString: #,0
+		displayFolder: 03. Clientes
+		lineageTag: dcd7e93a-4a4b-4060-ac21-bb72eec48a21
+
+	measure '# Clientes Sem Compra 90D' =
+			VAR _DataReferencia = MAX( dCalendario[Data] )
+			VAR _ClientesInativos =
+			    FILTER(
+			        VALUES( dCliente[ClienteId] ),
+			        VAR _UltimaCompra =
+			            CALCULATE(
+			                MAX( fVendas[Data] ),
+			                REMOVEFILTERS( dCalendario )
+			            )
+			        RETURN
+			            NOT ISBLANK( _UltimaCompra )
+			                && _UltimaCompra < _DataReferencia - 90
+			    )
+			RETURN
+			    COUNTROWS( _ClientesInativos )
+		formatString: #,0
+		displayFolder: 03. Clientes
+		lineageTag: 683a7231-ac91-42b5-b387-fca16e1b4514
+
+	measure '# Clientes Sem Compra 180D' =
+			VAR _DataReferencia = MAX( dCalendario[Data] )
+			VAR _ClientesInativos =
+			    FILTER(
+			        VALUES( dCliente[ClienteId] ),
+			        VAR _UltimaCompra =
+			            CALCULATE(
+			                MAX( fVendas[Data] ),
+			                REMOVEFILTERS( dCalendario )
+			            )
+			        RETURN
+			            NOT ISBLANK( _UltimaCompra )
+			                && _UltimaCompra < _DataReferencia - 180
+			    )
+			RETURN
+			    COUNTROWS( _ClientesInativos )
+		formatString: #,0
+		displayFolder: 03. Clientes
+		lineageTag: 09b3fb4c-0ffe-49d0-91eb-2efd80bbd6ec
+
+	column VendaId
+		dataType: string
+		lineageTag: 864b63d4-fb8e-481e-aea7-23824b1d9a57
+		summarizeBy: none
+		sourceColumn: VendaId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: cc7df427-29d5-4bc8-bb8b-367c921212bf
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ClienteId
+		dataType: string
+		lineageTag: 68060aa6-e165-4d53-a7d6-2ffe8a2b9cd6
+		summarizeBy: none
+		sourceColumn: ClienteId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProdutoId
+		dataType: string
+		lineageTag: f0582981-fd1f-4294-993b-de756786899b
+		summarizeBy: none
+		sourceColumn: ProdutoId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantidade
+		dataType: int64
+		formatString: 0
+		lineageTag: 4c325d34-7dd8-456b-a987-052d75d8a8b0
+		summarizeBy: sum
+		sourceColumn: Quantidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column PrecoUnitario
+		dataType: double
+		lineageTag: 883c017c-8ede-4bfb-bab7-09b233fb9a18
+		summarizeBy: sum
+		sourceColumn: PrecoUnitario
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ValorTotal
+		dataType: double
+		lineageTag: bbd27b5b-8293-4064-a6f9-796ab2a2f5d6
+		summarizeBy: sum
+		sourceColumn: ValorTotal
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column FormaPagamento
+		dataType: string
+		lineageTag: 3b770596-a99a-4212-8d66-845106f6abd4
+		summarizeBy: none
+		sourceColumn: FormaPagamento
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: 18a69ef6-cad7-45d9-ad7e-9dfcf39e7535
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column LocalId
+		dataType: string
+		lineageTag: b52b7607-7193-4d5a-85e3-781f44bfe09d
+		summarizeBy: none
+		sourceColumn: LocalId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fVendas = m
+		mode: import
+		source =
+				let
+				  origem = srcVendasExemplo,
+				  navegacao = origem{[Item = "Vendas", Kind = "Sheet"]}[Data],
+				  cabecalhosPromovidos = Table.PromoteHeaders(navegacao, [PromoteAllScalars = true]),
+				  tiposAjustados = Table.TransformColumnTypes(cabecalhosPromovidos, {{"ID_Venda", type text}, {"Data", type date}, {"ID_Cliente", type text}, {"ID_Produto", type text}, {"Quantidade", Int64.Type}, {"Preço_Unitário", type number}, {"Valor_Total", type number}, {"Forma_Pagamento", type text}, {"Status", type text}}),
+				  mergeCliente = Table.NestedJoin(tiposAjustados, {"ID_Cliente"}, dCliente, {"ClienteId"}, "cliente", JoinKind.LeftOuter),
+				  expandeLocal = Table.ExpandTableColumn(mergeCliente, "cliente", {"LocalId"}, {"LocalId"}),
+				  colunasRenomeadas = Table.RenameColumns(expandeLocal, {{"ID_Venda", "VendaId"}, {"ID_Cliente", "ClienteId"}, {"ID_Produto", "ProdutoId"}, {"Preço_Unitário", "PrecoUnitario"}, {"Valor_Total", "ValorTotal"}, {"Forma_Pagamento", "FormaPagamento"}})
+				in
+				  colunasRenomeadas
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

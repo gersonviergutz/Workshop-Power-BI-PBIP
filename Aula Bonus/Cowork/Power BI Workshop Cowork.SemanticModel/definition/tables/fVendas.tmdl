@@ -1,0 +1,117 @@
+table fVendas
+	lineageTag: 28a09ca9-1aa6-43b3-958a-462895e69080
+
+	column IdVenda
+		dataType: string
+		lineageTag: 864b63d4-fb8e-481e-aea7-23824b1d9a57
+		summarizeBy: none
+		sourceColumn: IdVenda
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: cc7df427-29d5-4bc8-bb8b-367c921212bf
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column IdCliente
+		dataType: string
+		lineageTag: 68060aa6-e165-4d53-a7d6-2ffe8a2b9cd6
+		summarizeBy: none
+		sourceColumn: IdCliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column IdProduto
+		dataType: string
+		lineageTag: f0582981-fd1f-4294-993b-de756786899b
+		summarizeBy: none
+		sourceColumn: IdProduto
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantidade
+		dataType: int64
+		formatString: 0
+		lineageTag: 4c325d34-7dd8-456b-a987-052d75d8a8b0
+		summarizeBy: sum
+		sourceColumn: Quantidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column PrecoUnitario
+		dataType: double
+		lineageTag: 883c017c-8ede-4bfb-bab7-09b233fb9a18
+		summarizeBy: sum
+		sourceColumn: PrecoUnitario
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ValorTotal
+		dataType: double
+		lineageTag: bbd27b5b-8293-4064-a6f9-796ab2a2f5d6
+		summarizeBy: sum
+		sourceColumn: ValorTotal
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column FormaPagamento
+		dataType: string
+		lineageTag: 3b770596-a99a-4212-8d66-845106f6abd4
+		summarizeBy: none
+		sourceColumn: FormaPagamento
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: 18a69ef6-cad7-45d9-ad7e-9dfcf39e7535
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fVendas = m
+		mode: import
+		queryGroup: Fatos
+		source =
+				let
+				    origem           = Fonte_VendasExemplo,
+				    navegarVendas    = origem{[Item = "Vendas", Kind = "Sheet"]}[Data],
+				    promoverCabec    = Table.PromoteHeaders(navegarVendas, [PromoteAllScalars = true]),
+				    tiparColunas     = Table.TransformColumnTypes(promoverCabec, {
+				                          {"ID_Venda", type text},
+				                          {"Data", type date},
+				                          {"ID_Cliente", type text},
+				                          {"ID_Produto", type text},
+				                          {"Quantidade", Int64.Type},
+				                          {"Preço_Unitário", type number},
+				                          {"Valor_Total", type number},
+				                          {"Forma_Pagamento", type text},
+				                          {"Status", type text}
+				                       }),
+				    renomearColunas  = Table.RenameColumns(tiparColunas, {
+				                          {"ID_Venda", "IdVenda"},
+				                          {"ID_Cliente", "IdCliente"},
+				                          {"ID_Produto", "IdProduto"},
+				                          {"Preço_Unitário", "PrecoUnitario"},
+				                          {"Valor_Total", "ValorTotal"},
+				                          {"Forma_Pagamento", "FormaPagamento"}
+				                       })
+				in
+				    renomearColunas
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

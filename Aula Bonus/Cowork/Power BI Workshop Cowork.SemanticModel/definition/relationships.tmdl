@@ -1,0 +1,12 @@
+relationship rel_fVendas_dCliente
+	fromColumn: fVendas.IdCliente
+	toColumn: dCliente.IdCliente
+
+relationship rel_fVendas_dProduto
+	fromColumn: fVendas.IdProduto
+	toColumn: dProduto.IdProduto
+
+relationship rel_fVendas_dCalendario
+	fromColumn: fVendas.Data
+	toColumn: dCalendario.Data
+

@@ -1,0 +1,16 @@
+relationship AutoDetected_4cb7e3e4-0e31-4433-b204-5edb2d35600d
+	fromColumn: fVendas.ClienteId
+	toColumn: dCliente.ClienteId
+
+relationship AutoDetected_b8677342-71bd-4b11-93fb-2978ade680dd
+	fromColumn: fVendas.ProdutoId
+	toColumn: dProduto.ProdutoId
+
+relationship Rel_fVendas_dLocalizacao_LocalId
+	fromColumn: fVendas.LocalId
+	toColumn: dLocalizacao.LocalId
+
+relationship Rel_fVendas_dCalendario_Data
+	fromColumn: fVendas.Data
+	toColumn: dCalendario.Data
+

@@ -1,0 +1,388 @@
+table _Medidas
+	lineageTag: b1e2c3d4-1111-4000-8000-000000000001
+
+	measure 'Receita Bruta' = SUM(fVendas[ValorTotal])
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: 01 Receita
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000101
+
+	measure 'Receita Aprovada' =
+			CALCULATE(
+			    [Receita Bruta],
+			    fVendas[Status] IN { "Concluída" }
+			)
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: 01 Receita
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000102
+
+	measure 'Receita Faturada' =
+			CALCULATE(
+			    [Receita Bruta],
+			    fVendas[Status] = "Concluída"
+			)
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: 01 Receita
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000103
+
+	measure 'Receita Cancelada' =
+			CALCULATE(
+			    [Receita Bruta],
+			    fVendas[Status] = "Cancelado"
+			)
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: 01 Receita
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000104
+
+	measure 'Receita Devolvida' =
+			CALCULATE(
+			    [Receita Bruta],
+			    fVendas[Status] = "Devolvido"
+			)
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: 01 Receita
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000105
+
+	measure 'Receita Faturada Líquida' = [Receita Faturada] - [Receita Devolvida]
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: 01 Receita
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000106
+
+	measure 'Quantidade de Pedidos' = DISTINCTCOUNT(fVendas[IdVenda])
+		formatString: #,0
+		displayFolder: 02 Volume
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000201
+
+	measure 'Quantidade Vendida' = SUM(fVendas[Quantidade])
+		formatString: #,0
+		displayFolder: 02 Volume
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000202
+
+	measure 'Ticket Médio' = DIVIDE([Receita Faturada Líquida], [Quantidade de Pedidos])
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: 02 Volume
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000203
+
+	measure 'Custo Total' =
+			SUMX(
+			    fVendas,
+			    fVendas[Quantidade] * RELATED(dProduto[CustoUnitario])
+			)
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: 03 Margem
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000301
+
+	measure 'Lucro Bruto' = [Receita Faturada Líquida] - [Custo Total]
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: 03 Margem
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000302
+
+	measure 'Margem Bruta %' = DIVIDE([Lucro Bruto], [Receita Faturada Líquida])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: 03 Margem
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000303
+
+	measure 'Clientes Ativos' =
+			CALCULATE(
+			    DISTINCTCOUNT(fVendas[IdCliente]),
+			    fVendas[Status] IN { "Aprovado", "Faturado" }
+			)
+		formatString: #,0
+		displayFolder: 04 Clientes
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000401
+
+	measure 'Clientes Positivados' = [Clientes Ativos]
+		formatString: #,0
+		displayFolder: 04 Clientes
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000402
+
+	measure 'Clientes Novos' =
+			VAR DataInicioPeriodo = MIN(dCalendario[Data])
+			VAR DataFimPeriodo    = MAX(dCalendario[Data])
+			RETURN
+			COUNTROWS(
+			    FILTER(
+			        VALUES(dCliente[IdCliente]),
+			        VAR Cliente = dCliente[IdCliente]
+			        VAR PrimeiraCompra =
+			            CALCULATE(
+			                MIN(fVendas[Data]),
+			                ALL(dCalendario),
+			                dCliente[IdCliente] = Cliente
+			            )
+			        RETURN
+			            NOT ISBLANK(PrimeiraCompra)
+			            && PrimeiraCompra >= DataInicioPeriodo
+			            && PrimeiraCompra <= DataFimPeriodo
+			    )
+			)
+		formatString: #,0
+		displayFolder: 04 Clientes
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000403
+
+	measure 'Clientes Reativados' =
+			VAR DataInicioPeriodo  = MIN(dCalendario[Data])
+			VAR DataFimPeriodo     = MAX(dCalendario[Data])
+			VAR DataLimiteAnterior = DataInicioPeriodo - 180
+			RETURN
+			COUNTROWS(
+			    FILTER(
+			        VALUES(dCliente[IdCliente]),
+			        VAR Cliente = dCliente[IdCliente]
+			        VAR ComprouPeriodo =
+			            CALCULATE(
+			                COUNTROWS(fVendas) > 0,
+			                ALL(dCalendario),
+			                fVendas[Data] >= DataInicioPeriodo,
+			                fVendas[Data] <= DataFimPeriodo,
+			                dCliente[IdCliente] = Cliente
+			            )
+			        VAR Comprou180DiasAntes =
+			            CALCULATE(
+			                COUNTROWS(fVendas) > 0,
+			                ALL(dCalendario),
+			                fVendas[Data] < DataInicioPeriodo,
+			                fVendas[Data] >= DataLimiteAnterior,
+			                dCliente[IdCliente] = Cliente
+			            )
+			        RETURN ComprouPeriodo && NOT Comprou180DiasAntes
+			    )
+			)
+		formatString: #,0
+		displayFolder: 04 Clientes
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000404
+
+	measure 'Clientes Inativos 30-59d' =
+			VAR DataRef    = MAX(dCalendario[Data])
+			VAR LimiteInf  = DataRef - 59
+			VAR LimiteSup  = DataRef - 30
+			RETURN
+			COUNTROWS(
+			    FILTER(
+			        VALUES(dCliente[IdCliente]),
+			        VAR UltimaCompra =
+			            CALCULATE(MAX(fVendas[Data]), ALL(dCalendario))
+			        RETURN
+			            NOT ISBLANK(UltimaCompra)
+			            && UltimaCompra >= LimiteInf
+			            && UltimaCompra < LimiteSup
+			    )
+			)
+		formatString: #,0
+		displayFolder: 04 Clientes\Inatividade
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000405
+
+	measure 'Clientes Inativos 60-89d' =
+			VAR DataRef    = MAX(dCalendario[Data])
+			VAR LimiteInf  = DataRef - 89
+			VAR LimiteSup  = DataRef - 60
+			RETURN
+			COUNTROWS(
+			    FILTER(
+			        VALUES(dCliente[IdCliente]),
+			        VAR UltimaCompra =
+			            CALCULATE(MAX(fVendas[Data]), ALL(dCalendario))
+			        RETURN
+			            NOT ISBLANK(UltimaCompra)
+			            && UltimaCompra >= LimiteInf
+			            && UltimaCompra < LimiteSup
+			    )
+			)
+		formatString: #,0
+		displayFolder: 04 Clientes\Inatividade
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000406
+
+	measure 'Clientes Inativos 90-179d' =
+			VAR DataRef    = MAX(dCalendario[Data])
+			VAR LimiteInf  = DataRef - 179
+			VAR LimiteSup  = DataRef - 90
+			RETURN
+			COUNTROWS(
+			    FILTER(
+			        VALUES(dCliente[IdCliente]),
+			        VAR UltimaCompra =
+			            CALCULATE(MAX(fVendas[Data]), ALL(dCalendario))
+			        RETURN
+			            NOT ISBLANK(UltimaCompra)
+			            && UltimaCompra >= LimiteInf
+			            && UltimaCompra < LimiteSup
+			    )
+			)
+		formatString: #,0
+		displayFolder: 04 Clientes\Inatividade
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000407
+
+	measure 'Clientes Inativos 180d+' =
+			VAR DataRef   = MAX(dCalendario[Data])
+			VAR LimiteSup = DataRef - 180
+			RETURN
+			COUNTROWS(
+			    FILTER(
+			        VALUES(dCliente[IdCliente]),
+			        VAR UltimaCompra =
+			            CALCULATE(MAX(fVendas[Data]), ALL(dCalendario))
+			        RETURN
+			            NOT ISBLANK(UltimaCompra)
+			            && UltimaCompra < LimiteSup
+			    )
+			)
+		formatString: #,0
+		displayFolder: 04 Clientes\Inatividade
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000408
+
+	measure 'Receita Top 10 Clientes' =
+			VAR TabelaTop =
+			    TOPN(
+			        10,
+			        SUMMARIZE(dCliente, dCliente[IdCliente]),
+			        [Receita Faturada Líquida],
+			        DESC
+			    )
+			RETURN
+			CALCULATE([Receita Faturada Líquida], TabelaTop)
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: 04 Clientes\Concentração
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000409
+
+	measure '% Concentração Top 10 Clientes' =
+			DIVIDE(
+			    [Receita Top 10 Clientes],
+			    CALCULATE([Receita Faturada Líquida], ALL(dCliente))
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: 04 Clientes\Concentração
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000410
+
+	measure 'Top N Produtos por Receita' =
+			VAR TopProd =
+			    TOPN(
+			        10,
+			        VALUES(dProduto[NomeProduto]),
+			        [Receita Faturada Líquida],
+			        DESC
+			    )
+			RETURN
+			CALCULATE([Receita Faturada Líquida], TopProd)
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: 05 Produto
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000501
+
+	measure 'Rank Produto por Receita' =
+			IF(
+			    HASONEVALUE(dProduto[NomeProduto]),
+			    RANKX(
+			        ALL(dProduto[NomeProduto]),
+			        [Receita Faturada Líquida],
+			        ,
+			        DESC,
+			        DENSE
+			    )
+			)
+		formatString: 0
+		displayFolder: 05 Produto
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000502
+
+	measure 'Rank Produto por Margem' =
+			IF(
+			    HASONEVALUE(dProduto[NomeProduto]),
+			    RANKX(
+			        ALL(dProduto[NomeProduto]),
+			        [Margem Bruta %],
+			        ,
+			        DESC,
+			        DENSE
+			    )
+			)
+		formatString: 0
+		displayFolder: 05 Produto
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000503
+
+	measure 'Flag Alta Venda Baixa Margem' =
+			VAR MedianaReceita =
+			    MEDIANX(VALUES(dProduto[NomeProduto]), [Receita Faturada Líquida])
+			VAR MedianaMargem =
+			    MEDIANX(VALUES(dProduto[NomeProduto]), [Margem Bruta %])
+			VAR MinhaReceita = [Receita Faturada Líquida]
+			VAR MinhaMargem  = [Margem Bruta %]
+			RETURN
+			IF(MinhaReceita > MedianaReceita && MinhaMargem < MedianaMargem, 1, 0)
+		formatString: 0
+		displayFolder: 05 Produto
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000504
+
+	measure 'Receita por Região' = CALCULATE([Receita Faturada Líquida])
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: 06 Regional
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000601
+
+	measure 'Rank Cidade' =
+			IF(
+			    HASONEVALUE(dCliente[Cidade]),
+			    RANKX(
+			        ALL(dCliente[Cidade]),
+			        [Receita Faturada Líquida],
+			        ,
+			        DESC,
+			        DENSE
+			    )
+			)
+		formatString: 0
+		displayFolder: 06 Regional
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000602
+
+	measure 'Receita AA (Ano Anterior)' =
+			CALCULATE(
+			    [Receita Faturada Líquida],
+			    SAMEPERIODLASTYEAR(dCalendario[Data])
+			)
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: 07 Time Intelligence
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000701
+
+	measure 'Variação YoY %' =
+			DIVIDE(
+			    [Receita Faturada Líquida] - [Receita AA (Ano Anterior)],
+			    [Receita AA (Ano Anterior)]
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: 07 Time Intelligence
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000702
+
+	measure 'Receita YTD' =
+			CALCULATE(
+			    [Receita Faturada Líquida],
+			    DATESYTD(dCalendario[Data])
+			)
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: 07 Time Intelligence
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000703
+
+	measure 'Receita MTD' =
+			CALCULATE(
+			    [Receita Faturada Líquida],
+			    DATESMTD(dCalendario[Data])
+			)
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		displayFolder: 07 Time Intelligence
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000704
+
+	measure '% Cancelamento sobre Aprovado' = DIVIDE([Receita Cancelada], [Receita Aprovada])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: 08 Indicadores Financeiros
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000801
+
+	measure '% Devolução sobre Faturado' = DIVIDE([Receita Devolvida], [Receita Faturada])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: 08 Indicadores Financeiros
+		lineageTag: b1e2c3d4-1111-4000-8000-000000000802
+
+	column _
+		lineageTag: cd9734f0-94ff-4c8e-b799-d93ebb5f0a4a
+		isNameInferred
+		sourceColumn: [_]
+
+	partition _Medidas = calculated
+		mode: import
+		source = ROW("_", BLANK())
+
+	annotation PBI_Id = b1e2c3d41111400080000000000000aa
+

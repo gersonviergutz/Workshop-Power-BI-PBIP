@@ -1,0 +1,420 @@
+Transcrição da Reunião
+
+Tema: Levantamento de Requisitos para Dashboard Comercial
+Cliente: Empresa fictícia de venda de eletrônicos
+Participantes:
+Ana, Analista de Negócios
+Carlos, Gerente Comercial
+Mariana, Coordenadora de Vendas
+Rafael, Analista Financeiro
+
+Data: 23/04/2026
+Duração: 1h15min
+
+1. Abertura da reunião
+
+Ana — Analista de Negócios:
+Bom dia, pessoal. Obrigada pela disponibilidade. O objetivo da nossa reunião é entender quais indicadores vocês acompanham hoje, quais dores existem no processo comercial e quais informações precisam estar no dashboard para apoiar a tomada de decisão. A ideia é sair daqui com uma visão clara dos principais KPIs, regras de cálculo, filtros necessários e prioridades.
+
+Carlos — Gerente Comercial:
+Perfeito, Ana. Hoje temos muitos dados, mas pouca visão consolidada. Cada área acaba montando suas próprias planilhas, e isso gera divergência nos números.
+
+Ana:
+Ótimo ponto. Então uma das primeiras necessidades é termos uma fonte única da verdade, certo?
+
+Carlos:
+Exatamente. Hoje, quando eu peço faturamento do mês, o comercial traz um número, o financeiro traz outro, e o e-commerce às vezes traz um terceiro.
+
+2. Entendimento do cenário atual
+
+Ana:
+Como vocês acompanham os resultados atualmente?
+
+Mariana — Coordenadora de Vendas:
+Hoje usamos relatórios exportados do ERP e algumas planilhas manuais. O time comercial acompanha vendas por vendedor, por cliente e por produto. Mas tudo é muito manual.
+
+Ana:
+Com que frequência esses relatórios são atualizados?
+
+Mariana:
+Em geral, uma vez por dia. Mas quando tem fechamento de mês, fazemos várias atualizações manuais durante o dia.
+
+Ana:
+Existe alguma rotina formal de fechamento ou validação dos números?
+
+Rafael — Analista Financeiro:
+Sim. O financeiro valida o faturamento emitido, mas o comercial costuma olhar o pedido aprovado. Então já temos uma diferença conceitual aí.
+
+Ana:
+Importante. Então precisamos diferenciar pelo menos dois conceitos: pedido aprovado e faturamento realizado.
+
+Carlos:
+Sim. Para o comercial, o pedido aprovado já é venda. Para o financeiro, venda só é venda quando a nota é emitida.
+
+3. Principais dores do cliente
+
+Ana:
+Quais são hoje as principais dores de vocês em relação à gestão comercial?
+
+Carlos:
+A primeira dor é não conseguir enxergar rapidamente se estamos batendo a meta. Eu dependo de alguém consolidar a informação para mim.
+
+Mariana:
+Outra dor é acompanhar desempenho por vendedor. Sabemos o total vendido, mas não temos clareza sobre ticket médio, quantidade de clientes atendidos, recompra e cancelamentos por vendedor.
+
+Rafael:
+Do lado financeiro, a dor é separar o que foi vendido, o que foi faturado, o que foi cancelado e o que foi devolvido. Tudo isso impacta o resultado.
+
+Ana:
+Então posso registrar como dores principais:
+
+Divergência de números entre áreas.
+Falta de visão rápida de meta realizada versus meta planejada.
+Baixa visibilidade do desempenho individual dos vendedores.
+Dificuldade em separar pedido, faturamento, cancelamento e devolução.
+Processo manual de consolidação de relatórios.
+
+Carlos:
+É exatamente isso.
+
+4. Indicadores estratégicos
+
+Ana:
+Pensando na diretoria, quais indicadores precisam aparecer logo na primeira tela do dashboard?
+
+Carlos:
+Eu preciso ver faturamento, meta, percentual atingido, ticket médio e margem.
+
+Ana:
+Quando você fala faturamento, é faturamento emitido ou pedido aprovado?
+
+Carlos:
+Para a diretoria, melhor faturamento emitido. Mas seria bom ter uma opção para alternar entre visão comercial e visão financeira.
+
+Rafael:
+Concordo. Podemos ter os dois indicadores, desde que fiquem bem nomeados.
+
+Ana:
+Perfeito. Então teríamos:
+
+Receita de pedidos aprovados
+Receita faturada
+Meta comercial
+Percentual de atingimento da meta
+Ticket médio
+Margem bruta
+Quantidade de pedidos
+Quantidade de clientes ativos
+Receita cancelada
+Receita devolvida
+
+Mariana:
+Também gostaria de ver positivação de clientes, principalmente por vendedor.
+
+Ana:
+Quando vocês dizem positivação, qual regra usam?
+
+Mariana:
+Cliente positivado é cliente que comprou no mês.
+
+Ana:
+Mesmo que tenha comprado uma vez apenas?
+
+Mariana:
+Sim. Comprou no mês, entra como positivado.
+
+5. Regras de cálculo dos KPIs
+
+Ana:
+Vamos detalhar algumas regras de cálculo para evitar interpretações diferentes.
+
+Ana:
+O que entra em receita faturada?
+
+Rafael:
+Notas fiscais emitidas, descontando devoluções.
+
+Ana:
+Então a regra seria:
+Receita Faturada Líquida = Valor das notas emitidas - Valor das devoluções?
+
+Rafael:
+Sim.
+
+Ana:
+E cancelamentos entram onde?
+
+Rafael:
+Cancelamento é pedido que não virou nota. Então não entra no faturamento, mas precisa aparecer como perda comercial.
+
+Carlos:
+Exato. Eu quero ver o quanto deixamos de vender por cancelamento.
+
+Ana:
+Então teremos um KPI chamado Receita Cancelada, baseado no valor dos pedidos cancelados.
+
+Mariana:
+Isso ajuda bastante.
+
+Ana:
+Sobre margem bruta: temos custo por produto disponível na base?
+
+Rafael:
+Sim. Temos custo médio por produto no cadastro.
+
+Ana:
+Então podemos calcular:
+Lucro Bruto = Receita Faturada - Custo dos Produtos Vendidos
+e
+Margem Bruta = Lucro Bruto / Receita Faturada.
+
+Rafael:
+Correto.
+
+6. Análise por vendedor
+
+Ana:
+Quais análises vocês precisam por vendedor?
+
+Mariana:
+Vendas totais, meta, percentual de atingimento, ticket médio, quantidade de pedidos, quantidade de clientes atendidos e clientes positivados.
+
+Ana:
+Vocês também precisam acompanhar clientes novos e reativados?
+
+Carlos:
+Sim. Cliente novo é importante. Reativado também, mas hoje não temos uma regra clara.
+
+Ana:
+Vamos definir uma regra inicial para cliente reativado?
+
+Carlos:
+Pode ser cliente que ficou mais de 180 dias sem comprar e voltou a comprar.
+
+Ana:
+Então registro a regra:
+Cliente Reativado = cliente com compra atual e sem compras nos últimos 180 dias anteriores à nova compra.
+
+Mariana:
+Boa.
+
+Ana:
+E cliente novo?
+
+Rafael:
+Primeira compra registrada na empresa.
+
+Ana:
+Perfeito.
+
+7. Análise de produtos e categorias
+
+Ana:
+Quais dores vocês têm na análise de produtos?
+
+Carlos:
+Vendemos muito eletrônico, mas nem sempre é onde temos melhor margem. Quero enxergar produto que vende muito, mas deixa pouca margem.
+
+Mariana:
+Também precisamos saber produtos parados ou com baixa venda.
+
+Ana:
+Vocês têm estoque disponível na base?
+
+Mariana:
+Temos, mas não sei se está na mesma tabela.
+
+Ana:
+Sem problema. Para uma primeira versão, posso prever os indicadores de venda. Para análise de estoque, podemos deixar como segunda etapa, caso a base esteja disponível.
+
+Carlos:
+Pode ser.
+
+Ana:
+Então para produtos teremos:
+
+Receita por produto
+Receita por categoria
+Quantidade vendida
+Margem por produto
+Margem por categoria
+Top produtos por receita
+Top produtos por margem
+Produtos com alta venda e baixa margem
+Produtos com baixa venda
+
+Carlos:
+Esses são essenciais.
+
+8. Análise de clientes
+
+Ana:
+Em relação aos clientes, quais informações vocês precisam acompanhar?
+
+Carlos:
+Top clientes, clientes que mais compram, clientes inativos e clientes que reduziram compra.
+
+Mariana:
+Também seria bom ver clientes sem compra nos últimos 60, 90 e 180 dias.
+
+Ana:
+Perfeito. Vocês querem classificar inatividade por faixas?
+
+Mariana:
+Sim.
+
+Ana:
+Sugestão de faixas:
+
+Sem compra há 30 dias
+Sem compra há 60 dias
+Sem compra há 90 dias
+Sem compra há 180 dias ou mais
+
+Carlos:
+Gosto dessa visão. Ajuda na gestão da carteira.
+
+Ana:
+E curva ABC de clientes faz sentido?
+
+Carlos:
+Sim. Principalmente para saber quem representa a maior parte do faturamento.
+
+Ana:
+Então teremos uma análise de concentração, mostrando quanto os principais clientes representam da receita.
+
+9. Análise regional
+
+Ana:
+Vocês precisam analisar vendas por cidade, estado e região?
+
+Carlos:
+Sim. Hoje não conseguimos ver isso de forma fácil.
+
+Mariana:
+Também precisamos comparar regiões. Tem região em que temos pouca atuação e não sabemos se é por falta de vendedor, logística ou preço.
+
+Ana:
+Então no dashboard regional teremos:
+
+Receita por região
+Receita por estado
+Receita por cidade
+Quantidade de clientes ativos por região
+Ticket médio por região
+Margem por região
+Ranking de cidades
+
+Carlos:
+Perfeito.
+
+10. Filtros necessários
+
+Ana:
+Quais filtros vocês consideram obrigatórios no dashboard?
+
+Mariana:
+Período, vendedor, região, cliente, produto, categoria e status do pedido.
+
+Rafael:
+Forma de pagamento também seria importante.
+
+Carlos:
+E canal de venda: loja, e-commerce, televendas e representantes.
+
+Ana:
+Ótimo. Registro os filtros:
+
+Período
+Ano
+Mês
+Vendedor
+Canal de venda
+Região
+Estado
+Cidade
+Cliente
+Segmento de cliente
+Produto
+Categoria
+Status do pedido
+Forma de pagamento
+11. Frequência de atualização
+
+Ana:
+Com que frequência o dashboard precisa ser atualizado?
+
+Carlos:
+Idealmente, de hora em hora.
+
+Rafael:
+Do ponto de vista financeiro, diário já resolveria. Mas para o comercial, quanto mais próximo do tempo real, melhor.
+
+Ana:
+Existe alguma limitação no ERP para atualização automática?
+
+Rafael:
+Precisamos confirmar com TI. Hoje a exportação é manual, mas parece que existe conexão com banco de dados.
+
+Ana:
+Então vou registrar como requisito técnico: avaliar conexão direta com banco de dados do ERP. Caso não seja possível, usar rotina automatizada de exportação.
+
+12. Níveis de acesso
+
+Ana:
+Todos poderão ver todos os dados ou precisamos de restrição por perfil?
+
+Carlos:
+Diretoria pode ver tudo. Gerentes regionais veem suas regiões. Vendedores devem ver apenas sua própria carteira.
+
+Ana:
+Então precisamos prever segurança em nível de linha, certo?
+
+Rafael:
+Sim, principalmente para vendedores.
+
+Ana:
+Registro como requisito: aplicar RLS — Row Level Security por perfil de usuário.
+
+13. Priorização do projeto
+
+Ana:
+Se tivermos que dividir o projeto em fases, o que entra na primeira entrega?
+
+Carlos:
+Primeira tela executiva, análise de vendedor, análise de produto e análise de cliente.
+
+Mariana:
+Concordo. Regional pode entrar também, mas se precisar deixar para a segunda fase, tudo bem.
+
+Rafael:
+Eu incluiria os indicadores financeiros básicos desde a primeira fase: faturado, devolvido, cancelado e margem.
+
+Ana:
+Então a primeira versão ficaria com:
+
+Visão executiva
+Desempenho por vendedor
+Produtos e categorias
+Clientes e carteira
+Indicadores financeiros básicos
+
+Carlos:
+Fechado.
+
+14. Encerramento
+
+Ana:
+Para fechar, vou consolidar o levantamento com dores, KPIs, regras de negócio, filtros e prioridades. Depois envio para validação de vocês antes de iniciar o desenvolvimento do modelo e das telas.
+
+Carlos:
+Perfeito.
+
+Mariana:
+Gostei bastante. Acho que agora ficou mais claro o que precisamos.
+
+Rafael:
+Da minha parte, só reforço que os conceitos precisam ficar bem documentados para evitar discussão depois.
+
+Ana:
+Concordo. Cada indicador terá uma definição formal, origem de dados e regra de cálculo. Isso será parte do documento de requisitos.

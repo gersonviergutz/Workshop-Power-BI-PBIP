@@ -1,0 +1,82 @@
+table Clientes
+	lineageTag: 132ed3dd-8fec-4049-aa9c-5fe45be90898
+
+	column ID_Cliente
+		dataType: string
+		lineageTag: a6b7f3d1-739a-4ed7-86b0-88b87f4f9e50
+		summarizeBy: none
+		sourceColumn: ID_Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nome_Cliente
+		dataType: string
+		lineageTag: cefcfdc6-6e5b-4fb8-ab94-109efb50ec3b
+		summarizeBy: none
+		sourceColumn: Nome_Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tipo
+		dataType: string
+		lineageTag: 88f19f3d-c010-4583-8fa2-4627bf65db20
+		summarizeBy: none
+		sourceColumn: Tipo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segmento
+		dataType: string
+		lineageTag: e16f2cd0-5327-4bf5-993a-e05107cd6f05
+		summarizeBy: none
+		sourceColumn: Segmento
+
+		annotation SummarizationSetBy = Automatic
+
+	column ID_Local
+		dataType: string
+		lineageTag: 3e100240-2122-4c76-9ee6-a586358bf41b
+		summarizeBy: none
+		sourceColumn: ID_Local
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cidade
+		dataType: string
+		lineageTag: d8c6e6a5-3923-4334-9ccb-b88dba754bea
+		summarizeBy: none
+		sourceColumn: Cidade
+
+	column Estado
+		dataType: string
+		lineageTag: 34ea1065-1858-44a9-a9db-ce460fe79c28
+		summarizeBy: none
+		sourceColumn: Estado
+
+	column Região
+		dataType: string
+		lineageTag: d5fc745d-3fa6-44d4-8734-9d45670073b4
+		summarizeBy: none
+		sourceColumn: Região
+
+	partition Clientes = m
+		mode: import
+		source =
+				let
+				  pCaminhoArquivoVendas = "C:\Users\gerso\OneDrive - Minhas Planilhas\Minhas Planilhas\Comunidade Dashmaker\Cursos\Workshop Power BI na era da IA Generativa\Material Workshop\Banco de Dados\Vendas Exemplo.xlsx",
+				  origemArquivo = Excel.Workbook(File.Contents(pCaminhoArquivoVendas), null, true),
+				  abaClientes = origemArquivo{[Item = "Clientes", Kind = "Sheet"]}[Data],
+				  cabecalhosClientes = Table.PromoteHeaders(abaClientes, [PromoteAllScalars = true]),
+				  tiposClientes = Table.TransformColumnTypes(cabecalhosClientes, {{"ID_Cliente", type text}, {"Nome_Cliente", type text}, {"Tipo", type text}, {"Segmento", type text}, {"ID_Local", type text}}),
+				  abaLocalizacao = origemArquivo{[Item = "Localização", Kind = "Sheet"]}[Data],
+				  cabecalhosLocalizacao = Table.PromoteHeaders(abaLocalizacao, [PromoteAllScalars = true]),
+				  tiposLocalizacao = Table.TransformColumnTypes(cabecalhosLocalizacao, {{"ID_Local", type text}, {"Cidade", type text}, {"Estado", type text}, {"Região", type text}}),
+				  mergeLocalizacao = Table.NestedJoin(tiposClientes, {"ID_Local"}, tiposLocalizacao, {"ID_Local"}, "Localizacao", JoinKind.LeftOuter),
+				  clientesExpandido = Table.ExpandTableColumn(mergeLocalizacao, "Localizacao", {"Cidade", "Estado", "Região"}, {"Cidade", "Estado", "Região"})
+				in
+				  clientesExpandido
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,22 @@
+model Model
+	culture: pt-BR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pt-BR
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["caminhoArquivoVendas","dataInicial","srcVendasExemplo","fVendas","dProduto","dCliente","dLocalizacao","dCalendario"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table fVendas
+ref table dProduto
+ref table dCliente
+ref table dLocalizacao
+ref table dCalendario
+
+ref cultureInfo pt-BR
+

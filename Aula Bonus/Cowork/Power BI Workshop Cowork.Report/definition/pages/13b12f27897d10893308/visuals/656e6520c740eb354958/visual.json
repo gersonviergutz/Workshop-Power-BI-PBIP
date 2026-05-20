@@ -1,0 +1,56 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.8.0/schema.json",
+  "name": "656e6520c740eb354958",
+  "position": {
+    "x": 207.40161759927491,
+    "y": 393.63212709922362,
+    "z": 3,
+    "height": 300,
+    "width": 300
+  },
+  "visual": {
+    "visualType": "card",
+    "autoSelectVisualType": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "% Cancelamento sobre Aprovado"
+                }
+              },
+              "queryRef": "_Medidas.% Cancelamento sobre Aprovado",
+              "nativeQueryRef": "% Cancelamento sobre Aprovado"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "589feca609c9dbc638e6",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Medidas"
+              }
+            },
+            "Property": "% Cancelamento sobre Aprovado"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

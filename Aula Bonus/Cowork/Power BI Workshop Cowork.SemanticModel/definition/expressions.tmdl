@@ -1,0 +1,16 @@
+expression caminhoArquivoVendas = "C:\Users\gerso\OneDrive - Minhas Planilhas\Minhas Planilhas\Comunidade Dashmaker\Cursos\Workshop Power BI na era da IA Generativa\Material Workshop\Banco de Dados\Vendas Exemplo.xlsx" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 9a1f0e1e-cf01-4a01-8a01-a01e1e1e1e01
+	queryGroup: Parâmetros
+
+	annotation PBI_ResultType = Text
+
+expression Fonte_VendasExemplo =
+		let
+		    fonteExcel = Excel.Workbook(File.Contents(caminhoArquivoVendas), null, true)
+		in
+		    fonteExcel
+	lineageTag: 9a1f0e1e-cf01-4a01-8a01-a01e1e1e1e02
+	queryGroup: Fontes
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,254 @@
+table dCalendario
+	lineageTag: efedd74e-ed33-4d8e-be0a-d39f51d76386
+	dataCategory: Time
+
+	column Data
+		dataType: dateTime
+		isKey
+		formatString: Long Date
+		lineageTag: c0d60329-ef03-4613-8748-367a7b2fb6d3
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Dia
+		dataType: int64
+		formatString: 0
+		lineageTag: 8c5d241b-95f0-42cd-88f5-0112d26280db
+		summarizeBy: sum
+		sourceColumn: Dia
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ano
+		dataType: int64
+		formatString: 0
+		lineageTag: 7d6ba52e-05f6-416d-859f-ef44172921f3
+		summarizeBy: sum
+		sourceColumn: Ano
+
+		annotation SummarizationSetBy = Automatic
+
+	column NomeMes
+		dataType: string
+		lineageTag: 3d328aed-9bc0-4543-a32e-9fa8d86645aa
+		summarizeBy: none
+		sourceColumn: NomeMes
+		sortByColumn: MesNum
+
+		annotation SummarizationSetBy = Automatic
+
+	column MesAbre
+		dataType: string
+		lineageTag: c4bbc7e3-8745-461e-bbe1-1588b8f1d45e
+		summarizeBy: none
+		sourceColumn: MesAbre
+
+		annotation SummarizationSetBy = Automatic
+
+	column MesAno
+		dataType: string
+		lineageTag: 892d485b-9d2e-4d5d-999f-b9db4b03269f
+		summarizeBy: none
+		sourceColumn: MesAno
+		sortByColumn: AnoMesInt
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column MesNum
+		dataType: int64
+		formatString: 0
+		lineageTag: 569c4eaf-6a4c-4bec-9489-bd92dc43b96d
+		summarizeBy: sum
+		sourceColumn: MesNum
+
+		annotation SummarizationSetBy = Automatic
+
+	column AnoMesInt
+		dataType: int64
+		formatString: 0
+		lineageTag: 2554bee0-ea79-4dc4-b107-d981c629262b
+		summarizeBy: sum
+		sourceColumn: AnoMesInt
+
+		annotation SummarizationSetBy = Automatic
+
+	column Trimestre
+		dataType: int64
+		formatString: 0
+		lineageTag: 2631532b-e79f-40e9-995a-29ea182db11e
+		summarizeBy: sum
+		sourceColumn: Trimestre
+
+		annotation SummarizationSetBy = Automatic
+
+	column TrimestreAbreviado
+		dataType: string
+		lineageTag: 8192b9c1-068f-4bbf-b28b-2a86afcdd3ed
+		summarizeBy: none
+		sourceColumn: TrimestreAbreviado
+
+		annotation SummarizationSetBy = Automatic
+
+	column Bimestre
+		dataType: string
+		lineageTag: 5da34a7e-852f-496a-9497-5ee3176537bb
+		summarizeBy: none
+		sourceColumn: Bimestre
+
+		annotation SummarizationSetBy = Automatic
+
+	column Semestre
+		dataType: string
+		lineageTag: 8e375a58-5a0f-4c36-9c99-1133e628e5df
+		summarizeBy: none
+		sourceColumn: Semestre
+
+		annotation SummarizationSetBy = Automatic
+
+	column Semana
+		dataType: int64
+		formatString: 0
+		lineageTag: f87720f4-f956-483f-9a17-21bc7fa94c08
+		summarizeBy: sum
+		sourceColumn: Semana
+
+		annotation SummarizationSetBy = Automatic
+
+	column DiaSemana
+		dataType: int64
+		formatString: 0
+		lineageTag: 4a9f58eb-54f5-4ecc-8222-b1904efd700a
+		summarizeBy: sum
+		sourceColumn: DiaSemana
+
+		annotation SummarizationSetBy = Automatic
+
+	column NomeDia
+		dataType: string
+		lineageTag: e1b57eab-2ce1-4164-a3e8-c0f99e32abaa
+		summarizeBy: none
+		sourceColumn: NomeDia
+		sortByColumn: DiaSemana
+
+		annotation SummarizationSetBy = Automatic
+
+	column EhDiaAtual
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: b312e916-29d0-4b1b-8c72-82c34e4a145d
+		summarizeBy: none
+		sourceColumn: EhDiaAtual
+
+		annotation SummarizationSetBy = Automatic
+
+	column EhMesAtual
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 990b34df-ef9b-44ce-b779-aeafd267593e
+		summarizeBy: none
+		sourceColumn: EhMesAtual
+
+		annotation SummarizationSetBy = Automatic
+
+	column EhAnoAtual
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 0e2b03ee-b723-45fb-9123-1d83de9da3c7
+		summarizeBy: none
+		sourceColumn: EhAnoAtual
+
+		annotation SummarizationSetBy = Automatic
+
+	column MesAtual
+		dataType: string
+		lineageTag: c1900fa0-b011-4b23-b0de-0668c68283b2
+		summarizeBy: none
+		sourceColumn: MesAtual
+
+		annotation SummarizationSetBy = Automatic
+
+	column AnoAtual
+		dataType: string
+		lineageTag: c6bf41ad-7724-416c-a896-945b9fa9ddf3
+		summarizeBy: none
+		sourceColumn: AnoAtual
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dCalendario = m
+		mode: import
+		source = ```
+				let
+				    hojeBrasil = Date.From(DateTimeZone.SwitchZone(DateTimeZone.UtcNow(), -3)),
+				    dataInicio = Date.StartOfYear(dataInicial),
+				    dataFim = Date.EndOfYear(hojeBrasil),
+				    dias = Duration.Days(dataFim - dataInicio) + 1,
+				    listarDatas = List.Dates(dataInicio, dias, #duration(1,0,0,0)),
+				    tabela = #table(
+				        type table[
+				            Data = date,
+				            Dia = Int64.Type,
+				            Ano = Int64.Type,
+				            NomeMes = text,
+				            MesAbre = text,
+				            MesAno = text,
+				            MesNum = Int64.Type,
+				            AnoMesInt = Int64.Type,
+				            Trimestre = Int64.Type,
+				            TrimestreAbreviado = text,
+				            Bimestre = text,
+				            Semestre = text,
+				            Semana = Int64.Type,
+				            DiaSemana = Int64.Type,
+				            NomeDia = text,
+				            EhDiaAtual = Logical.Type,
+				            EhMesAtual = Logical.Type,
+				            EhAnoAtual = Logical.Type,
+				            MesAtual = text,
+				            AnoAtual = text
+				            
+				
+				        ],
+				        List.Transform(
+				            listarDatas,
+				            each {
+				                _,
+				                Date.Day(_),
+				                Date.Year(_),
+				                Text.Proper( Date.MonthName(_)),
+				                Text.Proper(Text.Start(Date.MonthName(_), 3)),
+				                Text.Proper(Text.Start(Date.MonthName(_), 3)) & "-" & Text.End(Text.From(Date.Year(_)), 2),
+				                Date.Month(_),
+				                Date.Year(_) * 100 + Date.Month(_),
+				                Date.QuarterOfYear(_),
+				                Text.From(Date.QuarterOfYear(_)) & "º Trim ",
+				                Text.From( Number.RoundUp( Date.Month(_)/2,0)) & "º Bim",
+				                Text.From( Number.RoundUp( Date.Month(_)/6,0)) & "º Sem",
+				                Date.WeekOfMonth(_),
+				                Date.DayOfWeek(_),
+				                Date.DayOfWeekName(_),
+				                _ = hojeBrasil,
+				                Date.Month(_) = Date.Month(hojeBrasil) and Date.Year(_) = Date.Year(hojeBrasil),
+				                Date.Year(_) = Date.Year(hojeBrasil),
+				                if Date.Month(_) = Date.Month(hojeBrasil) and Date.Year(_) = Date.Year(hojeBrasil) then "Mês Atual" else Text.Proper(Text.Start(Date.MonthName(_), 3)),
+				                if Date.Year(_) = Date.Year(hojeBrasil) then "Ano Atual" else Text.From(Date.Year(_))
+				                
+				
+				            }
+				
+				        )
+				    )
+				in
+				    tabela
+				```
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

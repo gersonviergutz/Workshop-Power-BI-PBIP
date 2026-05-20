@@ -1,0 +1,235 @@
+table Vendas
+	lineageTag: 28a09ca9-1aa6-43b3-958a-462895e69080
+
+	measure 'Receita Bruta' = SUM(Vendas[Valor_Total])
+		formatString: R$ #,0.00;-R$ #,0.00;R$ #,0.00
+		displayFolder: 01.Executivo\Receita
+		lineageTag: dde41078-a819-4ae7-a978-7dad6e7a6b16
+
+	measure 'Receita Pedidos Aprovados' = CALCULATE([Receita Bruta], FILTER(Vendas, CONTAINSSTRING(UPPER(Vendas[Status]), "APROV")))
+		formatString: R$ #,0.00;-R$ #,0.00;R$ #,0.00
+		displayFolder: 01.Executivo\Receita
+		lineageTag: b6cc43b8-b571-4509-9b1d-78e404b80bdd
+
+	measure 'Receita Faturada' = CALCULATE([Receita Bruta], FILTER(Vendas, CONTAINSSTRING(UPPER(Vendas[Status]), "FATUR")))
+		formatString: R$ #,0.00;-R$ #,0.00;R$ #,0.00
+		displayFolder: 01.Executivo\Receita
+		lineageTag: 91cd7d8a-c5a2-4bb5-8224-928015f52e99
+
+	measure 'Receita Devolvida' = CALCULATE([Receita Bruta], FILTER(Vendas, CONTAINSSTRING(UPPER(Vendas[Status]), "DEVOL")))
+		formatString: R$ #,0.00;-R$ #,0.00;R$ #,0.00
+		displayFolder: 01.Executivo\Receita
+		lineageTag: 57eacee0-6eb6-458d-ba41-c989cb7fe1e8
+
+	measure 'Receita Cancelada' = CALCULATE([Receita Bruta], FILTER(Vendas, CONTAINSSTRING(UPPER(Vendas[Status]), "CANCEL")))
+		formatString: R$ #,0.00;-R$ #,0.00;R$ #,0.00
+		displayFolder: 01.Executivo\Receita
+		lineageTag: 2ab5e5c1-c627-454d-8a73-c2e897f9c91b
+
+	measure 'Receita Faturada Líquida' = [Receita Faturada] - [Receita Devolvida]
+		formatString: R$ #,0.00;-R$ #,0.00;R$ #,0.00
+		displayFolder: 01.Executivo\Receita
+		lineageTag: a91dca30-41d7-46a0-904d-ffcea9fd7d40
+
+	measure 'Perda Comercial Cancelamento' = [Receita Cancelada]
+		formatString: R$ #,0.00;-R$ #,0.00;R$ #,0.00
+		displayFolder: 01.Executivo\Receita
+		lineageTag: 838a81f6-9f77-40ab-b3fd-6a09ce189c1b
+
+	/// Placeholder: depende de tabela de metas por período/vendedor/canal.
+	measure 'Meta Comercial' = BLANK()
+		formatString: R$ #,0.00;-R$ #,0.00;R$ #,0.00
+		displayFolder: 01.Executivo\Meta
+		lineageTag: a9c6ab56-c5eb-42fb-9bf7-61126a3258c3
+
+	measure 'Atingimento da Meta %' = DIVIDE([Receita Faturada Líquida], [Meta Comercial])
+		formatString: 0.00%
+		displayFolder: 01.Executivo\Meta
+		lineageTag: 6dc97714-83d6-4f47-9f85-5e16096a8d77
+
+	measure 'Quantidade de Pedidos' = DISTINCTCOUNT(Vendas[ID_Venda])
+		formatString: #,0
+		displayFolder: 01.Executivo\Volume
+		lineageTag: 8a32373e-f9fb-4815-a757-5d1f6b4a1d40
+
+	measure 'Pedidos Aprovados' = CALCULATE([Quantidade de Pedidos], FILTER(Vendas, CONTAINSSTRING(UPPER(Vendas[Status]), "APROV")))
+		formatString: #,0
+		displayFolder: 01.Executivo\Volume
+		lineageTag: 11106f21-74a5-43c3-bac7-dc62e99d3a03
+
+	measure 'Pedidos Faturados' = CALCULATE([Quantidade de Pedidos], FILTER(Vendas, CONTAINSSTRING(UPPER(Vendas[Status]), "FATUR")))
+		formatString: #,0
+		displayFolder: 01.Executivo\Volume
+		lineageTag: 10e77fb8-d352-4b1c-99ea-136173ec3b98
+
+	measure 'Quantidade Vendida' = SUM(Vendas[Quantidade])
+		formatString: #,0
+		displayFolder: 03.Produto\Volume
+		lineageTag: fabf21a0-1deb-42dd-a208-218d5625b59e
+
+	measure 'Ticket Médio' = DIVIDE([Receita Faturada Líquida], [Pedidos Faturados])
+		formatString: R$ #,0.00;-R$ #,0.00;R$ #,0.00
+		displayFolder: 01.Executivo\Receita
+		lineageTag: 84e91424-f70c-4712-ad3b-7f15998f54ec
+
+	measure 'Clientes Ativos' = DISTINCTCOUNT(Vendas[ID_Cliente])
+		formatString: #,0
+		displayFolder: 04.Cliente\Base
+		lineageTag: 816bbbe7-1f7b-4cdf-863b-72ca65aec5d9
+
+	measure 'Base de Clientes' = DISTINCTCOUNT(Clientes[ID_Cliente])
+		formatString: #,0
+		displayFolder: 04.Cliente\Base
+		lineageTag: f9342fd9-eeab-4871-8d6a-a8a617df0953
+
+	measure 'Positivação %' = DIVIDE([Clientes Ativos], [Base de Clientes])
+		formatString: 0.00%
+		displayFolder: 04.Cliente\Base
+		lineageTag: c42f03ed-2a7a-4f6f-aa7a-e74bad1323f1
+
+	measure 'Custo dos Produtos Vendidos' = SUMX(Vendas, Vendas[Quantidade] * RELATED(Produtos[Custo_Unitário]))
+		formatString: R$ #,0.00;-R$ #,0.00;R$ #,0.00
+		displayFolder: 02.Financeiro\Margem
+		lineageTag: eab8c0e0-e323-4c33-bc78-cdaf110ecae1
+
+	measure 'Lucro Bruto' = [Receita Faturada Líquida] - [Custo dos Produtos Vendidos]
+		formatString: R$ #,0.00;-R$ #,0.00;R$ #,0.00
+		displayFolder: 02.Financeiro\Margem
+		lineageTag: e8a3c7b3-9153-43ed-ad89-cc88d3f9f345
+
+	measure 'Margem Bruta %' = DIVIDE([Lucro Bruto], [Receita Faturada Líquida])
+		formatString: 0.00%
+		displayFolder: 02.Financeiro\Margem
+		lineageTag: b2d5c7b1-98ce-4a9c-9ba3-60a1e517f67b
+
+	measure 'Preço Médio' = DIVIDE([Receita Bruta], [Quantidade Vendida])
+		formatString: R$ #,0.00;-R$ #,0.00;R$ #,0.00
+		displayFolder: 03.Produto\Volume
+		lineageTag: 74146217-b775-48c6-80d2-0602a4fb33fb
+
+	measure 'Clientes Novos' = VAR InicioPeriodo = MIN('Calendário'[Data]) VAR FimPeriodo = MAX('Calendário'[Data]) RETURN COUNTROWS(FILTER(VALUES(Clientes[ID_Cliente]), VAR PrimeiraCompra = CALCULATE(MIN(Vendas[Data]), ALL('Calendário')) RETURN NOT ISBLANK(PrimeiraCompra) && PrimeiraCompra >= InicioPeriodo && PrimeiraCompra <= FimPeriodo))
+		formatString: #,0
+		displayFolder: 04.Cliente\Ciclo de Vida
+		lineageTag: bab12b4d-9eec-48ad-9a5c-6366362c1b7c
+
+	measure 'Clientes Reativados 180d' = VAR InicioPeriodo = MIN('Calendário'[Data]) VAR FimPeriodo = MAX('Calendário'[Data]) RETURN COUNTROWS(FILTER(VALUES(Clientes[ID_Cliente]), VAR PrimeiraCompraPeriodo = CALCULATE(MIN(Vendas[Data]), FILTER(ALL('Calendário'[Data]), 'Calendário'[Data] >= InicioPeriodo && 'Calendário'[Data] <= FimPeriodo)) VAR UltimaCompraAnterior = CALCULATE(MAX(Vendas[Data]), FILTER(ALL('Calendário'[Data]), 'Calendário'[Data] < PrimeiraCompraPeriodo)) RETURN NOT ISBLANK(PrimeiraCompraPeriodo) && NOT ISBLANK(UltimaCompraAnterior) && DATEDIFF(UltimaCompraAnterior, PrimeiraCompraPeriodo, DAY) > 180))
+		formatString: #,0
+		displayFolder: 04.Cliente\Ciclo de Vida
+		lineageTag: a3587765-ec33-43d0-a89f-3a7cba62fb79
+
+	measure 'Clientes Inativos 30d+' = VAR DataRef = MAX('Calendário'[Data]) RETURN COUNTROWS(FILTER(VALUES(Clientes[ID_Cliente]), VAR UltimaCompra = CALCULATE(MAX(Vendas[Data]), ALL('Calendário')) RETURN NOT ISBLANK(UltimaCompra) && DATEDIFF(UltimaCompra, DataRef, DAY) >= 30))
+		formatString: #,0
+		displayFolder: 04.Cliente\Inatividade
+		lineageTag: 9d97996b-3925-4bef-bf98-27b44e7a6419
+
+	measure 'Clientes Inativos 60d+' = VAR DataRef = MAX('Calendário'[Data]) RETURN COUNTROWS(FILTER(VALUES(Clientes[ID_Cliente]), VAR UltimaCompra = CALCULATE(MAX(Vendas[Data]), ALL('Calendário')) RETURN NOT ISBLANK(UltimaCompra) && DATEDIFF(UltimaCompra, DataRef, DAY) >= 60))
+		formatString: #,0
+		displayFolder: 04.Cliente\Inatividade
+		lineageTag: e6a775e5-0e82-4292-8c65-43b91397c66b
+
+	measure 'Clientes Inativos 90d+' = VAR DataRef = MAX('Calendário'[Data]) RETURN COUNTROWS(FILTER(VALUES(Clientes[ID_Cliente]), VAR UltimaCompra = CALCULATE(MAX(Vendas[Data]), ALL('Calendário')) RETURN NOT ISBLANK(UltimaCompra) && DATEDIFF(UltimaCompra, DataRef, DAY) >= 90))
+		formatString: #,0
+		displayFolder: 04.Cliente\Inatividade
+		lineageTag: 65bce289-f177-4206-a049-e10cc3eb9e8b
+
+	measure 'Clientes Inativos 180d+' = VAR DataRef = MAX('Calendário'[Data]) RETURN COUNTROWS(FILTER(VALUES(Clientes[ID_Cliente]), VAR UltimaCompra = CALCULATE(MAX(Vendas[Data]), ALL('Calendário')) RETURN NOT ISBLANK(UltimaCompra) && DATEDIFF(UltimaCompra, DataRef, DAY) >= 180))
+		formatString: #,0
+		displayFolder: 04.Cliente\Inatividade
+		lineageTag: 76b19410-3bf0-4ef7-b53a-c518c0d37bb0
+
+	column ID_Venda
+		dataType: string
+		lineageTag: 864b63d4-fb8e-481e-aea7-23824b1d9a57
+		summarizeBy: none
+		sourceColumn: ID_Venda
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: cc7df427-29d5-4bc8-bb8b-367c921212bf
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ID_Cliente
+		dataType: string
+		lineageTag: 68060aa6-e165-4d53-a7d6-2ffe8a2b9cd6
+		summarizeBy: none
+		sourceColumn: ID_Cliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column ID_Produto
+		dataType: string
+		lineageTag: f0582981-fd1f-4294-993b-de756786899b
+		summarizeBy: none
+		sourceColumn: ID_Produto
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantidade
+		dataType: int64
+		formatString: 0
+		lineageTag: 4c325d34-7dd8-456b-a987-052d75d8a8b0
+		summarizeBy: sum
+		sourceColumn: Quantidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column Preço_Unitário
+		dataType: double
+		lineageTag: 883c017c-8ede-4bfb-bab7-09b233fb9a18
+		summarizeBy: sum
+		sourceColumn: Preço_Unitário
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Valor_Total
+		dataType: double
+		lineageTag: bbd27b5b-8293-4064-a6f9-796ab2a2f5d6
+		summarizeBy: sum
+		sourceColumn: Valor_Total
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Forma_Pagamento
+		dataType: string
+		lineageTag: 3b770596-a99a-4212-8d66-845106f6abd4
+		summarizeBy: none
+		sourceColumn: Forma_Pagamento
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: 18a69ef6-cad7-45d9-ad7e-9dfcf39e7535
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Vendas = m
+		mode: import
+		source =
+				let
+				  pCaminhoArquivoVendas = "C:\Users\gerso\OneDrive - Minhas Planilhas\Minhas Planilhas\Comunidade Dashmaker\Cursos\Workshop Power BI na era da IA Generativa\Material Workshop\Banco de Dados\Vendas Exemplo.xlsx",
+				  origemArquivo = Excel.Workbook(File.Contents(pCaminhoArquivoVendas), null, true),
+				  abaVendas = origemArquivo{[Item = "Vendas", Kind = "Sheet"]}[Data],
+				  cabecalhosPromovidos = Table.PromoteHeaders(abaVendas, [PromoteAllScalars = true]),
+				  tiposAjustados = Table.TransformColumnTypes(cabecalhosPromovidos, {{"ID_Venda", type text}, {"Data", type date}, {"ID_Cliente", type text}, {"ID_Produto", type text}, {"Quantidade", Int64.Type}, {"Preço_Unitário", type number}, {"Valor_Total", type number}, {"Forma_Pagamento", type text}, {"Status", type text}})
+				in
+				  tiposAjustados
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

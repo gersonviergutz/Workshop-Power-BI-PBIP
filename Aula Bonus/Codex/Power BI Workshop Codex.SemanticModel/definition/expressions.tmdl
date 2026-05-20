@@ -1,0 +1,21 @@
+expression caminhoArquivoVendas = "C:\Users\gerso\OneDrive - Minhas Planilhas\Minhas Planilhas\Comunidade Dashmaker\Cursos\Workshop Power BI na era da IA Generativa\Material Workshop\Banco de Dados\Vendas Exemplo.xlsx" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: d10b5187-3b17-4674-8794-a9c57bce1677
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Text
+
+expression dataInicial = #date(2021, 1, 1) meta [IsParameterQuery = true, Type = "Date", IsParameterQueryRequired = true]
+	lineageTag: 6003593e-014e-47a9-8368-157816b1e7e1
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Date
+
+expression srcVendasExemplo = let origem = Excel.Workbook(File.Contents(caminhoArquivoVendas), null, true) in origem
+	lineageTag: dfd44687-20a7-4692-ace4-bfbcafd1d3a1
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

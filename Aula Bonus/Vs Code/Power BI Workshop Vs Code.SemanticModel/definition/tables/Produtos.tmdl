@@ -1,0 +1,62 @@
+table Produtos
+	lineageTag: 61b970d9-8a05-4f73-a5ba-ba4b50dc1127
+
+	column ID_Produto
+		dataType: string
+		lineageTag: 9ec9f813-8726-4b61-9680-0d30db793483
+		summarizeBy: none
+		sourceColumn: ID_Produto
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nome_Produto
+		dataType: string
+		lineageTag: 90bd1efa-a638-4639-8afe-dcbde0e6f908
+		summarizeBy: none
+		sourceColumn: Nome_Produto
+
+		annotation SummarizationSetBy = Automatic
+
+	column Categoria
+		dataType: string
+		lineageTag: 93d2ba9d-6b4d-4536-99a9-0e87a15172bc
+		summarizeBy: none
+		sourceColumn: Categoria
+
+		annotation SummarizationSetBy = Automatic
+
+	column Preço_Unitário
+		dataType: double
+		lineageTag: 9efd5aad-10d6-4eee-aa3b-fdd6e3d56d4c
+		summarizeBy: none
+		sourceColumn: Preço_Unitário
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Custo_Unitário
+		dataType: int64
+		formatString: 0
+		lineageTag: 97f70849-6a5f-4487-be14-234111463dba
+		summarizeBy: none
+		sourceColumn: Custo_Unitário
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Produtos = m
+		mode: import
+		source =
+				let
+				  pCaminhoArquivoVendas = "C:\Users\gerso\OneDrive - Minhas Planilhas\Minhas Planilhas\Comunidade Dashmaker\Cursos\Workshop Power BI na era da IA Generativa\Material Workshop\Banco de Dados\Vendas Exemplo.xlsx",
+				  origemArquivo = Excel.Workbook(File.Contents(pCaminhoArquivoVendas), null, true),
+				  abaProdutos = origemArquivo{[Item = "Produtos", Kind = "Sheet"]}[Data],
+				  cabecalhosPromovidos = Table.PromoteHeaders(abaProdutos, [PromoteAllScalars = true]),
+				  tiposAjustados = Table.TransformColumnTypes(cabecalhosPromovidos, {{"ID_Produto", type text}, {"Nome_Produto", type text}, {"Categoria", type text}, {"Preço_Unitário", type number}, {"Custo_Unitário", Int64.Type}})
+				in
+				  tiposAjustados
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

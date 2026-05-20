@@ -1,0 +1,59 @@
+table dCliente
+	lineageTag: 132ed3dd-8fec-4049-aa9c-5fe45be90898
+
+	column ClienteId
+		dataType: string
+		lineageTag: a6b7f3d1-739a-4ed7-86b0-88b87f4f9e50
+		summarizeBy: none
+		sourceColumn: ClienteId
+
+		annotation SummarizationSetBy = Automatic
+
+	column NomeCliente
+		dataType: string
+		lineageTag: cefcfdc6-6e5b-4fb8-ab94-109efb50ec3b
+		summarizeBy: none
+		sourceColumn: NomeCliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tipo
+		dataType: string
+		lineageTag: 88f19f3d-c010-4583-8fa2-4627bf65db20
+		summarizeBy: none
+		sourceColumn: Tipo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segmento
+		dataType: string
+		lineageTag: e16f2cd0-5327-4bf5-993a-e05107cd6f05
+		summarizeBy: none
+		sourceColumn: Segmento
+
+		annotation SummarizationSetBy = Automatic
+
+	column LocalId
+		dataType: string
+		lineageTag: 3e100240-2122-4c76-9ee6-a586358bf41b
+		summarizeBy: none
+		sourceColumn: LocalId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dCliente = m
+		mode: import
+		source =
+				let
+				  origem = srcVendasExemplo,
+				  navegacao = origem{[Item = "Clientes", Kind = "Sheet"]}[Data],
+				    cabecalhosPromovidos = Table.PromoteHeaders(navegacao, [PromoteAllScalars=true]),
+				    tiposAjustados = Table.TransformColumnTypes(cabecalhosPromovidos,{{"ID_Cliente", type text}, {"Nome_Cliente", type text}, {"Tipo", type text}, {"Segmento", type text}, {"ID_Local", type text}}),
+				    colunasRenomeadas = Table.RenameColumns(tiposAjustados, {{"ID_Cliente", "ClienteId"}, {"Nome_Cliente", "NomeCliente"}, {"ID_Local", "LocalId"}})
+				in
+				    colunasRenomeadas
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

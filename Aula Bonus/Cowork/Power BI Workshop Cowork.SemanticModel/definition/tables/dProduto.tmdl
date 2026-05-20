@@ -1,0 +1,74 @@
+table dProduto
+	lineageTag: 61b970d9-8a05-4f73-a5ba-ba4b50dc1127
+
+	column IdProduto
+		dataType: string
+		lineageTag: 9ec9f813-8726-4b61-9680-0d30db793483
+		summarizeBy: none
+		sourceColumn: IdProduto
+
+		annotation SummarizationSetBy = Automatic
+
+	column NomeProduto
+		dataType: string
+		lineageTag: 90bd1efa-a638-4639-8afe-dcbde0e6f908
+		summarizeBy: none
+		sourceColumn: NomeProduto
+
+		annotation SummarizationSetBy = Automatic
+
+	column Categoria
+		dataType: string
+		lineageTag: 93d2ba9d-6b4d-4536-99a9-0e87a15172bc
+		summarizeBy: none
+		sourceColumn: Categoria
+
+		annotation SummarizationSetBy = Automatic
+
+	column PrecoUnitario
+		dataType: double
+		lineageTag: 9efd5aad-10d6-4eee-aa3b-fdd6e3d56d4c
+		summarizeBy: none
+		sourceColumn: PrecoUnitario
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column CustoUnitario
+		dataType: int64
+		formatString: 0
+		lineageTag: 97f70849-6a5f-4487-be14-234111463dba
+		summarizeBy: none
+		sourceColumn: CustoUnitario
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dProduto = m
+		mode: import
+		queryGroup: Dimensões
+		source =
+				let
+				    origem           = Fonte_VendasExemplo,
+				    navegarProdutos  = origem{[Item = "Produtos", Kind = "Sheet"]}[Data],
+				    promoverCabec    = Table.PromoteHeaders(navegarProdutos, [PromoteAllScalars = true]),
+				    tiparColunas     = Table.TransformColumnTypes(promoverCabec, {
+				                          {"ID_Produto", type text},
+				                          {"Nome_Produto", type text},
+				                          {"Categoria", type text},
+				                          {"Preço_Unitário", type number},
+				                          {"Custo_Unitário", Int64.Type}
+				                       }),
+				    renomearColunas  = Table.RenameColumns(tiparColunas, {
+				                          {"ID_Produto", "IdProduto"},
+				                          {"Nome_Produto", "NomeProduto"},
+				                          {"Preço_Unitário", "PrecoUnitario"},
+				                          {"Custo_Unitário", "CustoUnitario"}
+				                       })
+				in
+				    renomearColunas
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
