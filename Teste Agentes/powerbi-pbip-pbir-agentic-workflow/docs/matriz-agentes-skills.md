@@ -2,7 +2,7 @@
 
 | Agente | Skills obrigatórias | Pode alterar modelo? | Pode alterar relatório? |
 |---|---|---:|---:|
-| 00-orquestrador-bi | process-orchestration, pbip-repository-governance, requirements-discovery, tmdl, pbir, qa-validation | Não | Não |
+| 00-orquestrador-bi | process-orchestration, pbip-repository-governance, requirements-discovery, tmdl, pbir, qa-validation, gate-protocol | Não | Não |
 | 01-analista-requisitos | requirements-discovery, client-presentation, process-orchestration | Não | Não |
 | 02-power-query-reviewer | power-query-m, tmdl, pbip-repository-governance, qa-validation | Sim, camada Power Query/TMDL relacionada | Não |
 | 03-data-modeler | dimensional-modeling, tmdl, pbip-repository-governance, qa-validation | Sim, modelagem/relacionamentos | Não |

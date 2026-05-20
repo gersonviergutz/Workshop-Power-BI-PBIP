@@ -38,6 +38,8 @@ Este histórico preserva o estado do projeto Codex Retail antes da adoção do p
 
 A partir desta data novos projetos devem usar a estrutura abaixo. O projeto Codex Retail pode ser remapeado para esta estrutura ao retomar via `/retomar-projeto-bi`.
 
+> **Remapeamento Codex Retail → pipeline guiado:** a antiga "Fase 5 — Apresentação e mockup ao cliente" (legado) foi dividida em duas fases novas: **Fase 5 — Mockup Figma** (agente 09) faz o mockup visual; a narrativa executiva textual permanece com `05-client-presentation` mas roda como entregável paralelo, não como fase com gate próprio.
+
 ## Fase 0 — Análise do projeto
 - [ ] Gate 0 (visão geral apresentada e modo escolhido)
 

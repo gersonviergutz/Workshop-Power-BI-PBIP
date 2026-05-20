@@ -23,7 +23,7 @@ Figma MCP autenticado. Verificar:
 1. Extrair lista de KPIs aprovados (status 🟢 e 🟡).
 2. Agrupar KPIs em "páginas" lógicas (visão executiva, vendas detalhadas, geográfico, etc.).
 3. Para cada página, definir layout em grid 12 colunas (cards de KPI no topo, gráfico principal central, tabela/lista lateral).
-4. Chamar `mcp__claude_ai_Figma__create_new_file` ou `figma:figma-generate-design` com prompt detalhado por página.
+4. Chamar `mcp__claude_ai_Figma__create_new_file` (ou, se ausente, invocar a skill `figma:figma-generate-design` — nome de skill, não de tool) com prompt detalhado por página.
 5. Capturar URL do arquivo Figma criado.
 6. Exportar thumbnails de cada página via `mcp__claude_ai_Figma__get_screenshot`.
 7. Gravar `docs/mockups/figma-url.md` com URL, paleta e lista de páginas.

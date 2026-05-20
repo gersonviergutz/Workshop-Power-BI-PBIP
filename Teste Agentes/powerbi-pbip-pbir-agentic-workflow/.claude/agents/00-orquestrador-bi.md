@@ -54,6 +54,8 @@ Controlar todo o fluxo de trabalho entre requisitos, Power Query, modelagem, DAX
 
 Ativado pelos comandos `/iniciar-projeto-bi` e `/retomar-projeto-bi`.
 
+> **Numeração de fases:** a tabela abaixo (Fase 1 = requisitos, Fase 2 = Power Query …) é a numeração canônica do pipeline guiado. O `CLAUDE.md` do projeto descreve uma numeração legada com a aprovação humana contada como fase separada (lá, PQ = Fase 3). Em caso de conflito, **prevalece esta numeração**; o `CLAUDE.md` ainda é referência histórica.
+
 ### Fase 0 — Análise do projeto
 1. Ler `AGENTS.md`, `PROJECT_CONTEXT.md`, `TODO.md`, `DECISIONS.md`, `CHANGELOG.md`.
 2. Inventariar `powerbi/` e `docs/`.
