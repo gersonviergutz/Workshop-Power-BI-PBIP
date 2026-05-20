@@ -173,7 +173,7 @@ Próxima ação: Validar refresh no Power BI Desktop antes de criar medidas DAX.
 **Agente:** brainstorming + writing-plans (humano: gersonggv)
 **Arquivos alterados:**
 - Criados: .claude/commands/iniciar-projeto-bi.md, .claude/commands/retomar-projeto-bi.md, .claude/agents/09-figma-mockup-designer.md, .claude/skills/gate-protocol/SKILL.md, .claude/skills/figma-mockup/SKILL.md, docs/templates/TODO-template.md, docs/power-query/input/.gitkeep
-- Modificados: .claude/agents/00,01,02,04,05,06, docs/matriz-agentes-skills.md, AGENTS.md, TODO.md
+- Modificados: .claude/agents/00,01,02,04,05,06, AGENTS.md, DECISIONS.md, docs/matriz-agentes-skills.md, TODO.md
 **Resumo:** Adoção de pipeline guiado interativo com gates explícitos e novo agente para mockup Figma.
 **Impacto:** Fluxo manual via prompts/01 deixa de ser o caminho recomendado; uso passa pelo /iniciar-projeto-bi.
 **Riscos:** Dependência de Figma MCP autenticado na Fase 5; fallback textual disponível.
