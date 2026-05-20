@@ -1,26 +1,11 @@
 # DECISIONS.md
 
-Registre aqui decisões técnicas, funcionais e de modelagem.
+Registre aqui decisões técnicas, funcionais e de modelagem que tomarem-se durante o ciclo de desenvolvimento.
+
+## Decisões fundacionais do kit (não excluir)
 
 | Data | Decisão | Contexto | Impacto | Responsável |
 |---|---|---|---|---|
-| 2026-04-24 | Projeto tratado como caso didático com cliente fictício de eletrônicos | Transcrição de reunião fornecida simula cenário realista para o workshop | Dados e nomes são ilustrativos; regras e KPIs seguem a transcrição como fonte única | Orquestrador |
-| 2026-04-24 | Separar conceitualmente "pedido aprovado" (visão comercial) e "faturamento emitido" (visão financeira) como KPIs distintos | Carlos e Rafael confirmaram divergência histórica entre áreas | Modelo precisará de medidas e, possivelmente, tabelas fato distintas para pedidos e NFs | Analista-requisitos |
-| 2026-04-24 | Escopo da primeira entrega: executiva, vendedor, produto, cliente, financeiro básico | Priorização definida com Carlos, Mariana e Rafael | Análise regional e estoque ficam para fase 2 | Orquestrador |
-| 2026-04-24 | RLS obrigatória: diretoria (full), gerente regional (sua região), vendedor (sua carteira) | Requisito confirmado por Carlos e Rafael | Exige coluna de segurança no modelo e roles em TMDL | Analista-requisitos |
-| 2026-04-24 | Requisitos consolidados como rascunho para Gate 1, ainda sem aprovação formal | Prompt `03-rodar-analista-requisitos.md` executado a partir da transcrição de 23/04/2026 | Desenvolvimento técnico deve aguardar validação explícita de Carlos, Mariana e Rafael | Analista-requisitos |
-| 2026-04-24 | Gate 1 exige aceite explícito antes de refatoração estrutural de Power Query/modelo | Pacote de validação criado para Carlos, Mariana e Rafael | Próxima fase técnica deve aguardar confirmação da fonte ERP, metas, numerador de atingimento e estrutura de RLS | Analista-requisitos |
-| 2026-04-24 | Gate 1 aprovado pelo cliente sem ajustes | Usuário solicitou registrar todos os requisitos como aprovados pelo cliente | Fase 3 — Análise Power Query fica autorizada; mudanças técnicas ainda exigem análise de impacto e rastreabilidade | Cliente / Orquestrador |
-| 2026-04-24 | Atingimento de meta deve permitir alternância entre visão comercial e financeira | Aprovação do Gate 1 confirmou a necessidade de manter pedidos aprovados e faturamento emitido bem nomeados | Medidas e visuais devem preservar ambos os conceitos e permitir comparação/alternância | Cliente |
-| 2026-04-24 | Gate 2 concluído como diagnóstico Power Query, sem alteração em TMDL | Fase 3 revisou as queries `Vendas`, `Produtos`, `Clientes`, `Localização` e `Calendário` | Refatoração Power Query fica como próxima decisão técnica, exigindo plano de impacto antes de alterar TMDL | Power-query-reviewer |
-| 2026-04-24 | Fonte Excel local atual é tratada como provisória | Auditoria Power Query identificou caminho absoluto local repetido em quatro queries | Próxima refatoração deve priorizar fonte governada, parâmetro ou conexão ERP/SQL | Power-query-reviewer |
-| 2026-04-24 | Refatoração Power Query aplicada sem renomear tabelas/colunas finais | Usuário solicitou executar a refatoração Power Query; dependências com relacionamentos e futuros visuais recomendam preservar nomes finais nesta rodada | Steps M foram padronizados, `Localização` corrigida, calendário tornado determinístico e tipos `MesNum`/`AnoMesINT` ajustados; fonte Excel local permanece provisória | Power-query-reviewer |
-| 2026-04-24 | Calendário passa a usar intervalo fixo 2021-2026 | Remoção de `DateTime.LocalNow()` evita mudanças não determinísticas a cada refresh | Caso o projeto precise de janela dinâmica, será necessária nova decisão técnica com parâmetros ou derivação pela fato | Power-query-reviewer |
-| 2026-04-24 | Fase 4 iniciada como diagnóstico de modelagem sem alteração TMDL | Prompt `05-rodar-data-modeler.md` determina primeira rodada apenas diagnóstica | Correções estruturais ficam pendentes para uma próxima rodada controlada; modelo atual não deve avançar para DAX final sem relação com calendário e validação de cardinalidade | Data Modeler |
-| 2026-04-24 | `Vendas` tratada como fato provisória e `Produtos`, `Clientes`, `Localização`, `Calendário` como dimensões | Revisão TMDL identificou cinco tabelas e três relacionamentos existentes | Modelo é aceitável como base didática, mas precisa evoluir para estrela aderente a pedidos, faturamento, metas, vendedor/carteira e RLS | Data Modeler |
-| 2026-04-24 | Fase 4 concluída estruturalmente no TMDL | Usuário solicitou concluir a fase de modelagem de dados | Criado relacionamento `Vendas[Data] -> Calendário[Data]`, ajustadas propriedades de calendário, ocultadas chaves técnicas e documentados relacionamentos; validação runtime ainda depende de refresh no Power BI Desktop | Data Modeler |
-| 2026-04-24 | Modelo mantém estrutura didática provisória sem renomear tabelas | Correções foram limitadas ao menor escopo para preservar dependências futuras de DAX/PBIR | Tabelas `Vendas`, `Produtos`, `Clientes`, `Localização` e `Calendário` permanecem com nomes atuais; futuras evoluções para vendedor, metas, RLS e fatos separadas ficam para fases posteriores | Data Modeler |
-| 2026-04-24 | Nomenclatura do modelo padronizada em TMDL | Usuário solicitou revisão dos nomes de tabelas e colunas | Tabelas passam a usar `fato_`/`dim_`, colunas passam a usar PascalCase sem acentos/underscores, `sourceColumn` e Power Query foram preservados; DAX/PBIR devem usar os novos nomes a partir das próximas fases | Data Modeler |
 | 2026-05-20 | D-01: Um único slash command `/iniciar-projeto-bi` | Alternativa avaliada: vários comandos por fase | Pedido explícito do usuário; comandos por fase entram só como atalhos opcionais | brainstorming + writing-plans (gersonggv) |
 | 2026-05-20 | D-02: `TODO.md` como fonte da verdade do estado | Alternativa avaliada: JSON paralelo / arquivo `.state` | Já é o padrão do projeto, evita duplicação | brainstorming + writing-plans (gersonggv) |
 | 2026-05-20 | D-03: Novo agente 09 para Figma | Alternativa avaliada: estender agente 05 (`client-presentation`) | Pedido do usuário; mantém escopos isolados entre narrativa e mockup visual | brainstorming + writing-plans (gersonggv) |
@@ -28,3 +13,13 @@ Registre aqui decisões técnicas, funcionais e de modelagem.
 | 2026-05-20 | D-05: `AskUserQuestion` com 3 opções fixas em todo gate | Alternativa avaliada: texto livre nos gates | Padronização + análise de telemetria futura | brainstorming + writing-plans (gersonggv) |
 | 2026-05-20 | D-06: Gate de PBIR roda `pbip-validator` antes de pedir aprovação humana | Alternativa avaliada: aprovar e validar depois | Evita aprovação cega de relatório com defeitos estruturais | brainstorming + writing-plans (gersonggv) |
 | 2026-05-20 | D-07: Verificação de Figma MCP antes da Fase 5 | Alternativa avaliada: tentar gerar e tratar erro | UX melhor — instruções claras antes do agente rodar | brainstorming + writing-plans (gersonggv) |
+
+## Decisões do projeto atual
+
+<!-- Adicione abaixo decisões tomadas durante o ciclo deste projeto.
+     Formato:
+     | AAAA-MM-DD | <decisão> | <contexto / alternativas> | <impacto> | <agente / pessoa> |
+-->
+
+| Data | Decisão | Contexto | Impacto | Responsável |
+|---|---|---|---|---|

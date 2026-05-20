@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 *)",
+      "Bash(python -c \"print\\('test'\\)\")",
+      "Bash(node -e \"console.log\\('node ok'\\)\")",
+      "Bash(python *)"
+    ]
+  }
+}
